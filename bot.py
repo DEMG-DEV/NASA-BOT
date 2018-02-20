@@ -1,7 +1,11 @@
+import requests
 import os
 from nasa import apod
+import urllib.request
+import tweepy
 import random
 import time
+from secrets import *
 
 def strTimeProp(start, end, format, prop):
     """Get a time at a proportion of a range of two formatted times.
@@ -19,7 +23,6 @@ def strTimeProp(start, end, format, prop):
 
     return time.strftime(format, time.localtime(ptime))
 
-
 def randomDate(start, end, prop):
     #return strTimeProp(start, end, '%m/%d/%Y', prop)
     return strTimeProp(start, end, '%Y-%m-%d', prop)
@@ -27,9 +30,23 @@ def randomDate(start, end, prop):
 os.environ['NASA_API_KEY'] = 'sUMrj7lWaYKyQA5w0Zs0PPz9YhBtJ6Pt5cSHVCzK'
 
 date = randomDate('1996-1-1', time.strftime('%Y-%m-%d'), random.random())
-print(date)
 
 picture = apod.apod(date)
 
-print(picture.title)
-print(picture.url)
+tweet = '#nasa '+picture.title
+
+auth = tweepy.OAuthHandler(C_KEY, C_SECRET)  
+auth.set_access_token(A_TOKEN, A_TOKEN_SECRET)  
+api = tweepy.API(auth)
+
+filename = 'temp.jpg'
+request = requests.get(picture.url, stream=True)
+if request.status_code == 200:
+    with open(filename, 'wb') as image:
+        for chunk in request:
+            image.write(chunk)
+    api.update_with_media(filename, tweet)
+    os.remove(filename)
+else:
+    print("Unable to download image")
+    api.update_status(tweet)
