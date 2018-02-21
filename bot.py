@@ -33,7 +33,7 @@ date = randomDate('1996-1-1', time.strftime('%Y-%m-%d'), random.random())
 
 picture = apod.apod(date)
 
-tweet = '#nasa '+picture.title+' -Date of photo: '+date
+tweet = '#nasa '+picture.title+' Date : '+date
 
 if(len(tweet) < 276):
     ocL = len(picture.explanation)
