@@ -33,7 +33,13 @@ date = randomDate('1996-1-1', time.strftime('%Y-%m-%d'), random.random())
 
 picture = apod.apod(date)
 
-tweet = '#nasa '+picture.title
+tweet = '#nasa '+picture.title+' -Date of photo: '+date
+
+if(len(tweet) < 276):
+    ocL = len(picture.explanation)
+    tL = len(tweet)
+    tot = ( ocL if ocL+tL <= 276 else 275-tL)
+    tweet += ' '+picture.explanation[:tot] + "..."
 
 auth = tweepy.OAuthHandler(C_KEY, C_SECRET)  
 auth.set_access_token(A_TOKEN, A_TOKEN_SECRET)  
